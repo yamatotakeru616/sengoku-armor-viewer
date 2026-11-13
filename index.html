@@ -4834,7 +4834,7 @@ const loaderGLTF = new THREE.GLTFLoader();
 const loaded = {};
 const _loading = {};
 function ensureLoaded(name, cb){
-  if (loaded[name]) { cb(); return; }
+  if (loaded[name]) { setTimeout(cb, 0); return; }
   if (_loading[name]) { _loading[name].push(cb); return; }
   _loading[name] = [cb];
   loaderGLTF.load(MODELS[name], gltf => {
@@ -4856,7 +4856,7 @@ function show(name){
     _pendingShow = name;
     const ld = document.getElementById('loading');
     ld.textContent = '読み込み中…'; ld.style.display = '';
-    need.forEach(k => ensureLoaded(k, () => { if (_pendingShow === name) show(name); }));
+    need.filter(k => !loaded[k]).forEach(k => ensureLoaded(k, () => { if (_pendingShow === name) show(name); }));
     return;
   }
   _pendingShow = null;
@@ -4912,11 +4912,11 @@ renderer.domElement.addEventListener('pointerdown', () => {
 // ---- part labels (positions are three.js coords; normals face outward) ----
 const LABELS = [
   {t: {black: '長烏帽子形兜（黒漆）', silver: '長烏帽子形兜（銀箔押）'},
-   p: [0.085, 1.82, -0.03], n: [0.98, 0, -0.2], dx: 16, dy: -12},
+   p: [0.085, 1.82, -0.03], n: [0.98, 0, -0.2], dx: 26, dy: -2},
   {t: {black: '蛇の目紋', silver: '日輪'},
    p: [0.088, 1.66, -0.027], n: [1, 0, 0], dx: 16, dy: 8},
   {t: {masamune: '三日月前立'},
-   p: [0.10, 1.52, 0.16], n: [0.55, 0, 0.83], dx: 16, dy: -10},
+   p: [0.10, 1.52, 0.16], n: [0.55, 0, 0.83], dx: 30, dy: 4},
   {t: {yukimura: '鹿角脇立'},
    p: [0.155, 1.62, -0.045], n: [0.92, 0, 0.2], dx: 16, dy: -8},
   {t: {yukimura: '六文銭前立'},
@@ -4932,7 +4932,7 @@ const LABELS = [
   {t: {nobunaga: '試し弾の痕'},
    p: [0.078, 1.075, 0.158], n: [0.4, 0, 0.9], dx: 20, dy: 4},
   {t: {hideyoshi: '一の谷馬藺後立'},
-   p: [0, 1.60, -0.115], n: [0, 0.5, -0.8], dx: 18, dy: -10},
+   p: [0, 1.60, -0.115], n: [0, 0.5, -0.8], dx: 28, dy: 0},
   {t: {hideyoshi: '金瓢箪前立'},
    p: [0, 1.475, 0.150], n: [0, 0, 1], dx: -18, dy: -6},
   {t: {mitsunari: '天衝脇立'},
@@ -4943,7 +4943,7 @@ const LABELS = [
    p: [0, 1.048, 0.156], n: [0, 0, 1], dx: 22, dy: 6},
   {t: '兜鉢', p: [-0.095, 1.375, 0.03], n: [-0.9, 0, 0.35], dx: -16, dy: -10},
   {t: '錏（しころ）', p: [-0.185, 1.225, -0.03], n: [-1, 0, 0], dx: -16, dy: 4},
-  {t: '面頬', p: [0, 1.255, 0.088], n: [0, 0, 1], dx: 18, dy: 16},
+  {t: '面頬', p: [0, 1.255, 0.088], n: [0, 0, 1], dx: 18, dy: -14},
   {t: {black: '蛇の目紋（胸）', silver: '蛇の目紋（胸）'},
    p: [0, 1.115, 0.158], n: [0, 0, 1], dx: -18, dy: 20},
   {t: {black: '仏胴', silver: '仏胴', masamune: '五枚胴', yukimura: '胴（赤備え）', tadakatsu: '黒糸威胴丸', ieyasu: '黒糸威胴丸', nobunaga: '南蛮胴', hideyoshi: '色々威二枚胴', mitsunari: '紺糸威二枚胴'},
@@ -4998,7 +4998,7 @@ function placeLabel(el, pos, nrm, text){
   _camDir.copy(camera.position).sub(pos).normalize();
   const facing = nrm.dot(_camDir);
   _v.copy(pos).project(camera);
-  el.style.opacity = (_v.z <= 1) ? String(Math.max(0, Math.min(1, (facing - 0.10) / 0.40))) : '0';
+  el.style.opacity = (_v.z <= 1) ? (facing <= 0.02 ? '0' : String(0.35 + 0.65 * Math.max(0, Math.min(1, (facing - 0.10) / 0.40)))) : '0';
   el.style.transform = 'translate(' + ((_v.x * 0.5 + 0.5) * w) + 'px,' +
     ((-_v.y * 0.5 + 0.5) * h) + 'px)';
 }
