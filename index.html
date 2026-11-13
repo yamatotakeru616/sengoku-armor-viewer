@@ -24,10 +24,14 @@
   .lbl { position:absolute; left:0; top:0; transition:opacity .25s; }
   .lbl .dot { position:absolute; width:7px; height:7px; margin:-3.5px 0 0 -3.5px;
     border-radius:50%; background:#f0d47a; box-shadow:0 0 0 2px rgba(0,0,0,.45); }
-  .lbl .tag { position:absolute; white-space:nowrap; font-size:12px; letter-spacing:.08em;
-    color:#efe9da; background:rgba(14,14,17,.78); border:1px solid rgba(201,162,39,.55);
-    border-radius:6px; padding:3px 8px; }
-  @media (max-width:640px){ #help{ display:none; } #head p{ max-width:70vw; } }
+  .lbl .tag { position:absolute; white-space:nowrap; font-size:11px; letter-spacing:.06em;
+    color:#efe9da; background:rgba(14,14,17,.66); border:1px solid rgba(201,162,39,.45);
+    border-radius:6px; padding:2px 7px; }
+  .lbl .tag.rgt::before { content:''; position:absolute; left:-21px; top:50%; width:20px; height:1px;
+    background:linear-gradient(90deg, rgba(240,212,122,0), rgba(240,212,122,.55)); }
+  .lbl .tag.lft::before { content:''; position:absolute; right:-21px; top:50%; width:20px; height:1px;
+    background:linear-gradient(90deg, rgba(240,212,122,.55), rgba(240,212,122,0)); }
+  @media (max-width:640px){ #help{ display:none; } #head p{ display:none; } #head h1{ font-size:14px; } .lbl .tag{ font-size:10.5px; } }
 </style>
 </head>
 <body>
@@ -4952,6 +4956,7 @@ const LABELS = [
 ];
 function labelTextFor(L, model){ return (typeof L.t === 'object') ? (L.t[model] || null) : L.t; }
 const lblRoot = document.getElementById('labels');
+const OFFX = 2.6, OFFY = 1.6;
 let curVariant = 'masamune', labelsOn = true, compareMode = false, sixMode = false, cmpKiyo = 'silver';
 LABELS.forEach(L => {
   L.pos = new THREE.Vector3(...L.p);
@@ -4959,8 +4964,9 @@ LABELS.forEach(L => {
   const el = document.createElement('div'); el.className = 'lbl';
   el.innerHTML = '<div class="dot"></div><div class="tag"></div>';
   L.tagEl = el.querySelector('.tag');
-  L.tagEl.style.transform = 'translate(' + L.dx + 'px,' + L.dy + 'px)' +
+  L.tagEl.style.transform = 'translate(' + (L.dx * OFFX) + 'px,' + (L.dy * OFFY) + 'px)' +
     (L.dx < 0 ? ' translateX(-100%)' : '') + ' translateY(-50%)';
+  L.tagEl.classList.add(L.dx < 0 ? 'lft' : 'rgt');
   lblRoot.appendChild(el); L.el = el;
   L.posL = L.pos.clone(); L.posL.x -= 0.6;
   L.posR = L.pos.clone(); L.posR.x += 0.6;
@@ -4968,6 +4974,7 @@ LABELS.forEach(L => {
   el2.innerHTML = '<div class="dot"></div><div class="tag"></div>';
   L.tagEl2 = el2.querySelector('.tag');
   L.tagEl2.style.transform = L.tagEl.style.transform;
+  L.tagEl2.classList.add(L.dx < 0 ? 'lft' : 'rgt');
   el2.style.opacity = '0';
   lblRoot.appendChild(el2); L.el2 = el2;
   L.els6 = []; L.pos6 = [];
@@ -4976,6 +4983,7 @@ LABELS.forEach(L => {
     e6.innerHTML = '<div class="dot"></div><div class="tag"></div>';
     const t6 = e6.querySelector('.tag');
     t6.style.transform = L.tagEl.style.transform;
+    t6.classList.add(L.dx < 0 ? 'lft' : 'rgt');
     t6.textContent = labelTextFor(L, k) || '';
     e6.style.opacity = '0';
     lblRoot.appendChild(e6); L.els6.push(e6);
@@ -4990,7 +4998,7 @@ function placeLabel(el, pos, nrm, text){
   _camDir.copy(camera.position).sub(pos).normalize();
   const facing = nrm.dot(_camDir);
   _v.copy(pos).project(camera);
-  el.style.opacity = (_v.z <= 1 && facing > 0.12) ? '1' : '0';
+  el.style.opacity = (_v.z <= 1) ? String(Math.max(0, Math.min(1, (facing - 0.10) / 0.40))) : '0';
   el.style.transform = 'translate(' + ((_v.x * 0.5 + 0.5) * w) + 'px,' +
     ((-_v.y * 0.5 + 0.5) * h) + 'px)';
 }
@@ -4998,7 +5006,7 @@ function updateLabels(){
   LABELS.forEach(L => {
     if (sixMode) {
       L.el.style.opacity = '0'; L.el2.style.opacity = '0';
-      SIX.forEach(([k], j) => placeLabel(L.els6[j], L.pos6[j], L.nrm, labelTextFor(L, k)));
+      SIX.forEach(([k], j) => placeLabel(L.els6[j], L.pos6[j], L.nrm, (typeof L.t === 'object') ? labelTextFor(L, k) : null));
     } else if (compareMode) {
       placeLabel(L.el, L.posL, L.nrm, labelTextFor(L, cmpKiyo));
       placeLabel(L.el2, L.posR, L.nrm, labelTextFor(L, 'masamune'));
