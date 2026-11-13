@@ -57,7 +57,7 @@
   <button class="mbtn" data-model="shingen">信玄 × 諏訪法性兜</button>
   <button class="mbtn" data-model="mitsuhide">光秀 × 三鈷剣・桔梗紋</button>
   <button class="mbtn" data-model="compare">並べて比較（清正 ＋ 政宗）</button>
-  <button class="mbtn" data-model="six">10人並び</button>
+  <button class="mbtn" data-model="six">11人並び</button>
   <span id="cmpbar" style="display:none">
     <span id="cmpkiyo">
     <span style="color:#8f8a7c; font-size:12px; margin:0 2px 0 10px;">清正側：</span>
@@ -4782,7 +4782,7 @@ const CAMS = {
   silver:   {pos: [1.25, 1.42, 2.55], tgt: [0, 1.0, 0]},
   masamune: {pos: [1.02, 1.12, 2.02], tgt: [0, 0.80, 0]},
   compare:  {pos: [0, 1.35, 3.60], tgt: [0, 0.98, 0]},
-  six:      {pos: [0, 1.45, 9.25], tgt: [0, 0.95, 0]},
+  six:      {pos: [0, 1.5, 10.15], tgt: [0, 0.95, 0]},
   yukimura: {pos: [1.06, 1.16, 2.10], tgt: [0, 0.84, 0]},
   tadakatsu: {pos: [1.10, 1.20, 2.20], tgt: [0, 0.86, 0]},
   ieyasu: {pos: [1.02, 1.12, 2.02], tgt: [0, 0.80, 0]},
@@ -4837,10 +4837,10 @@ ground.rotation.x = -Math.PI / 2; ground.position.y = -0.002; scene.add(ground);
     new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false}));
   m.rotation.x = -Math.PI / 2; m.position.y = 0.001; scene.add(m);
 })();
-const SIX = [['nobunaga', -2.475], ['kenshin', -1.925], ['masamune', -1.375],
-             ['mitsuhide', -0.825], ['ieyasu', -0.275], ['shingen', 0.275],
-             ['hideyoshi', 0.825], ['yukimura', 1.375], ['tadakatsu', 1.925],
-             ['silver', 2.475]];
+const SIX = [['nobunaga', -2.75], ['kenshin', -2.2], ['masamune', -1.65],
+             ['mitsuhide', -1.1], ['ieyasu', -0.55], ['shingen', 0],
+             ['hideyoshi', 0.55], ['yukimura', 1.1], ['mitsunari', 1.65],
+             ['tadakatsu', 2.2], ['silver', 2.75]];
 const loaderGLTF = new THREE.GLTFLoader();
 const loaded = {};
 const _loading = {};
